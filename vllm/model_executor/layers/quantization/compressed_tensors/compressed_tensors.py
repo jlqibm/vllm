@@ -765,7 +765,7 @@ class CompressedTensorsConfig(QuantizationConfig):
             return CompressedTensorsW4A4Fp4()
 
         if self._is_mxfp4(weight_quant):
-            return CompressedTensorsW4A4Mxfp4()
+            return CompressedTensorsW4A4Mxfp4(weight_only=input_quant is None)
 
         if self._is_mxfp8(weight_quant):
             return CompressedTensorsW8A8Mxfp8()

@@ -32,13 +32,14 @@ class CompressedTensorsW4A4Mxfp4(CompressedTensorsScheme):
     - No global scale (unlike NVFP4)
 
     On SM100+ with FlashInfer: true W4A4 (activations dynamically quantized).
-    Otherwise: W4A16 weight-only via Marlin.
+    Otherwise, or when the checkpoint declares no input activation quantization
+    (MXFP4A16): W4A16 weight-only via Marlin.
     """
 
-    def __init__(self):
+    def __init__(self, weight_only: bool = False):
         self.group_size = 32
         self.kernel = init_mxfp4_linear_kernel(
-            activation_quant_key=kMxfp4Dynamic,
+            activation_quant_key=None if weight_only else kMxfp4Dynamic,
         )
 
     @classmethod
