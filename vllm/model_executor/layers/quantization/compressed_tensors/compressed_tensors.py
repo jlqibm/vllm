@@ -68,6 +68,7 @@ from vllm.model_executor.layers.quantization.utils.quant_utils import (
     GroupShape,
     QuantKey,
     create_fp8_quant_key,
+    kMxfp4Dynamic,
 )
 from vllm.model_executor.layers.vocab_parallel_embedding import (
     ParallelLMHead,
@@ -809,7 +810,10 @@ class CompressedTensorsConfig(QuantizationConfig):
             )
 
         if self._is_mxfp4(weight_quant):
-            return CompressedTensorsW4A4Mxfp4()
+            # MXFP4A16 (no input activation quantization) runs weight-only, not W4A4 (#56770)
+            return CompressedTensorsW4A4Mxfp4(
+                activation_quant_key=None if input_quant is None else kMxfp4Dynamic
+            )
 
         if self._is_mxfp8(weight_quant):
             return CompressedTensorsW8A8Mxfp8()
